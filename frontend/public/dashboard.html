@@ -1,10 +1,9 @@
-<!-- frontend/public/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZASS Cloud Browser - Professional Dashboard</title>
+    <title>ZASS Cloud Browser</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -13,80 +12,45 @@
             min-height: 100vh;
             padding: 20px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header {
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card {
             background: white;
             border-radius: 20px;
             padding: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
         h1 { color: #667eea; margin-bottom: 10px; }
-        .stats-grid {
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
+        .stat {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        .stat-value { font-size: 2.5em; font-weight: bold; color: #667eea; }
-        .stat-label { color: #666; margin-top: 10px; }
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        input, select, button {
+        .stat-value { font-size: 2em; font-weight: bold; color: #667eea; }
+        input, select, button, textarea {
             padding: 12px;
             font-size: 16px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            transition: all 0.3s;
+            margin: 5px;
         }
-        input:focus, select:focus { outline: none; border-color: #667eea; }
         button {
             background: #667eea;
             color: white;
             border: none;
             cursor: pointer;
-            font-weight: bold;
         }
-        button:hover { background: #5a67d8; transform: translateY(-2px); }
-        .result-area {
-            margin-top: 30px;
-            text-align: center;
-        }
-        img { max-width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .url-input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .url-input-group input { flex: 1; }
-        .batch-input {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f7f7f7;
-            border-radius: 10px;
-        }
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-family: monospace;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        button:hover { background: #5a67d8; }
+        img { max-width: 100%; border-radius: 10px; margin-top: 20px; }
+        .url-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .url-group input { flex: 1; }
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -96,58 +60,63 @@
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>☁️ ZASS Cloud Browser Enterprise</h1>
-            <p>World-Class Browser Automation | Fast | Reliable | Global CDN</p>
+        <div class="card">
+            <h1>☁️ ZASS Cloud Browser</h1>
+            <p>Professional Screenshot & PDF API | Fast | Reliable</p>
         </div>
         
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card"><div class="stat-value" id="totalRequests">0</div><div class="stat-label">Total Requests</div></div>
-            <div class="stat-card"><div class="stat-value" id="cacheHits">0</div><div class="stat-label">Cache Hits</div></div>
-            <div class="stat-card"><div class="stat-value" id="activeWorkers">0</div><div class="stat-label">Active Workers</div></div>
-            <div class="stat-card"><div class="stat-value" id="uptime">0</div><div class="stat-label">Uptime (seconds)</div></div>
+        <div class="stats" id="stats">
+            <div class="stat"><div class="stat-value" id="requests">0</div><div>Total Requests</div></div>
+            <div class="stat"><div class="stat-value" id="workers">0</div><div>Active Workers</div></div>
+            <div class="stat"><div class="stat-value" id="cache">0</div><div>Cache Hits</div></div>
+            <div class="stat"><div class="stat-value" id="uptime">0</div><div>Uptime (s)</div></div>
         </div>
         
-        <div class="main-card">
-            <h2>🎯 Quick Render</h2>
-            <div class="url-input-group">
-                <input type="text" id="singleUrl" placeholder="https://example.com" value="https://zass.website">
+        <div class="card">
+            <h2>🎯 Quick Screenshot</h2>
+            <div class="url-group">
+                <input type="text" id="url" placeholder="https://example.com" value="https://google.com">
                 <select id="format">
-                    <option value="png">PNG Screenshot</option>
+                    <option value="png">PNG Image</option>
                     <option value="pdf">PDF Document</option>
                 </select>
-                <button onclick="renderSingle()">🚀 Render Now</button>
+                <button onclick="capture()">📸 Capture</button>
             </div>
-            <div class="result-area" id="singleResult"></div>
-            
-            <div class="batch-input">
-                <h3>📦 Batch Render (Up to 100 URLs)</h3>
-                <textarea id="batchUrls" rows="4" placeholder="https://example1.com&#10;https://example2.com&#10;https://example3.com"></textarea>
-                <button onclick="renderBatch()" style="margin-top: 10px;">⚡ Batch Render</button>
-                <div id="batchResult"></div>
-            </div>
+            <div id="result"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📦 Batch Screenshots</h2>
+            <textarea id="batchUrls" rows="3" placeholder="https://google.com&#10;https://github.com&#10;https://stackoverflow.com"></textarea>
+            <button onclick="batchCapture()">⚡ Batch Capture (Max 10)</button>
+            <div id="batchResult"></div>
         </div>
     </div>
     
     <script>
-        async function fetchStats() {
+        async function loadStats() {
             const res = await fetch('/api/stats');
             const stats = await res.json();
-            document.getElementById('totalRequests').textContent = stats.totalRequests || 0;
-            document.getElementById('cacheHits').textContent = stats.cacheHits || 0;
-            document.getElementById('activeWorkers').textContent = stats.workers?.total || 0;
+            document.getElementById('requests').textContent = stats.requests || 0;
+            document.getElementById('workers').textContent = stats.workers?.available || 0;
+            document.getElementById('cache').textContent = stats.cacheHits || 0;
             document.getElementById('uptime').textContent = Math.floor(stats.uptime || 0);
         }
         
-        async function renderSingle() {
-            const url = document.getElementById('singleUrl').value;
+        async function capture() {
+            const url = document.getElementById('url').value;
             const format = document.getElementById('format').value;
-            const resultDiv = document.getElementById('singleResult');
-            resultDiv.innerHTML = '<div class="loader"></div><p>Rendering your page...</p>';
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '<div class="loader"></div><p>Rendering...</p>';
             
             try {
                 const res = await fetch(`/api/render?url=${encodeURIComponent(url)}&format=${format}`);
@@ -160,16 +129,17 @@
                     const imgUrl = URL.createObjectURL(blob);
                     resultDiv.innerHTML = `<img src="${imgUrl}" alt="Screenshot">`;
                 }
-                fetchStats();
+                loadStats();
             } catch (error) {
                 resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
             }
         }
         
-        async function renderBatch() {
+        async function batchCapture() {
             const urlsText = document.getElementById('batchUrls').value;
-            const urls = urlsText.split('\n').filter(u => u.trim());
+            const urls = urlsText.split('\n').filter(u => u.trim()).slice(0, 10);
             const resultDiv = document.getElementById('batchResult');
+            
             resultDiv.innerHTML = '<div class="loader"></div><p>Processing batch...</p>';
             
             const res = await fetch('/api/batch', {
@@ -177,18 +147,19 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ urls, format: 'png' })
             });
-            const results = await res.json();
+            const data = await res.json();
             
-            resultDiv.innerHTML = '<h3>Batch Results:</h3><div style="display:grid;gap:10px;">' +
-                results.map(r => `<div style="padding:10px;border:1px solid #e0e0e0;border-radius:10px;">
+            resultDiv.innerHTML = '<h3>Results:</h3>' + data.results.map(r => `
+                <div style="border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:10px;">
                     <strong>${r.url}</strong>: ${r.success ? '✅ Success' : '❌ ' + r.error}
-                    ${r.success ? `<br><img src="data:image/png;base64,${r.data}" style="max-height:200px;margin-top:10px;">` : ''}
-                </div>`).join('') + '</div>';
-            fetchStats();
+                    ${r.success ? `<br><img src="data:image/png;base64,${r.data}" style="max-height:200px; margin-top:10px;">` : ''}
+                </div>
+            `).join('');
+            loadStats();
         }
         
-        setInterval(fetchStats, 5000);
-        fetchStats();
+        setInterval(loadStats, 3000);
+        loadStats();
     </script>
 </body>
 </html>
