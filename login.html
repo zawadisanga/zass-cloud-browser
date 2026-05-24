@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZASS Enterprise - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #0f0c29 50%, #1a1a2e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #0f0c29, #1a1a2e);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -18,97 +17,64 @@
         .card {
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
-            padding: 50px;
+            padding: 40px;
             border-radius: 24px;
-            width: 450px;
+            width: 400px;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        h1 { font-size: 32px; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #667eea); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        h1 { font-size: 28px; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #667eea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(102,126,234,0.4); }
         a { color: #667eea; text-decoration: none; }
-        .error { color: #ff6b6b; text-align: center; margin-top: 15px; display: none; }
-        .info { background: rgba(102,126,234,0.2); padding: 15px; border-radius: 12px; margin-top: 20px; font-size: 12px; color: #aaa; }
+        .error { color: #ff6b6b; text-align: center; margin-top: 10px; display: none; }
+        .info { background: rgba(102,126,234,0.2); padding: 15px; border-radius: 10px; margin-top: 20px; font-size: 13px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>🔐 Enterprise Login</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">Access your ZASS Enterprise dashboard</p>
-        
+        <h1>🔐 Login</h1>
         <form id="loginForm">
-            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="email" id="email" placeholder="Email" required>
             <input type="password" id="password" placeholder="Password" required>
             <button type="submit">Login →</button>
         </form>
-        
         <div id="errorMsg" class="error"></div>
-        
         <p style="margin-top: 20px; text-align: center;">Don't have an account? <a href="/register">Register here</a></p>
-        <p style="margin-top: 15px; text-align: center;"><a href="/">← Back to Home</a></p>
-        
         <div class="info">
-            <strong>📋 Demo Credentials:</strong><br>
-            Email: <span style="color: #667eea;">demo@enterprise.com</span><br>
-            Password: <span style="color: #667eea;">Enterprise2026!</span>
+            📋 <strong>Demo Account</strong><br>
+            Email: demo@zass.com<br>
+            Password: demo123
         </div>
     </div>
-
     <script>
         document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMsg');
-            
             errorDiv.style.display = 'none';
             
             try {
-                const response = await fetch('/api/enterprise/login', {
+                const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email, password: password })
+                    body: JSON.stringify({ email, password })
                 });
-                
-                const data = await response.json();
-                
+                const data = await res.json();
                 if (data.success) {
-                    // Save to localStorage
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('company', data.company);
-                    localStorage.setItem('apiKey', data.apiKey);
+                    localStorage.setItem('apiKey', data.api_key);
                     localStorage.setItem('userEmail', email);
-                    
-                    alert('✅ Welcome ' + data.company + '!');
                     window.location.href = '/dashboard';
                 } else {
                     errorDiv.style.display = 'block';
-                    errorDiv.innerHTML = '❌ ' + (data.error || 'Login failed. Invalid credentials.');
+                    errorDiv.innerText = '❌ ' + (data.error || 'Invalid credentials');
                 }
-            } catch (error) {
+            } catch (err) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '❌ Login failed: ' + error.message;
+                errorDiv.innerText = '❌ Login failed: ' + err.message;
             }
         };
     </script>
