@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZASS Enterprise - Register</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #0f0c29 50%, #1a1a2e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #0f0c29, #1a1a2e);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -20,66 +19,40 @@
             backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 24px;
-            width: 500px;
+            width: 450px;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        h1 { font-size: 32px; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #667eea); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        input, select {
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        h1 { font-size: 28px; margin-bottom: 10px; background: linear-gradient(135deg, #fff, #667eea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
         a { color: #667eea; text-decoration: none; }
-        .error { color: #ff6b6b; text-align: center; margin-top: 15px; display: none; }
-        .success { color: #00ff00; text-align: center; margin-top: 15px; display: none; }
+        .error { color: #ff6b6b; text-align: center; margin-top: 10px; display: none; }
+        .success { color: #00ff00; text-align: center; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h1>📝 Enterprise Registration</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">Create your ZASS Enterprise account</p>
-        
+        <h1>📝 Register</h1>
         <form id="registerForm">
             <input type="text" id="company" placeholder="Company Name" required>
-            <input type="email" id="email" placeholder="Email Address" required>
-            <input type="tel" id="phone" placeholder="Phone Number (optional)">
-            <input type="password" id="password" placeholder="Password (min 8 characters)" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="tel" id="phone" placeholder="Phone (optional)">
+            <input type="password" id="password" placeholder="Password (min 6 chars)" required>
             <select id="plan">
-                <option value="startup">Startup - $49/month (5,000 requests)</option>
+                <option value="free">Free - $0/month (500 requests)</option>
+                <option value="pro">Pro - $49/month (5,000 requests)</option>
                 <option value="business">Business - $99/month (15,000 requests)</option>
                 <option value="enterprise">Enterprise - $299/month (unlimited)</option>
             </select>
             <button type="submit">Register →</button>
         </form>
-        
         <div id="errorMsg" class="error"></div>
         <div id="successMsg" class="success"></div>
-        
         <p style="margin-top: 20px; text-align: center;">Already have an account? <a href="/login">Login here</a></p>
-        <p style="margin-top: 15px; text-align: center;"><a href="/">← Back to Home</a></p>
     </div>
-
     <script>
         document.getElementById('registerForm').onsubmit = async (e) => {
             e.preventDefault();
-            
             const company = document.getElementById('company').value;
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
@@ -88,48 +61,41 @@
             
             const errorDiv = document.getElementById('errorMsg');
             const successDiv = document.getElementById('successMsg');
-            
             errorDiv.style.display = 'none';
             successDiv.style.display = 'none';
             
-            if (password.length < 8) {
+            if (password.length < 6) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '❌ Password must be at least 8 characters';
+                errorDiv.innerText = '❌ Password must be at least 6 characters';
                 return;
             }
             
             try {
-                const response = await fetch('/api/enterprise/register', {
+                const res = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        company_name: company, 
-                        email: email, 
-                        phone: phone, 
-                        password: password, 
-                        plan: plan 
-                    })
+                    body: JSON.stringify({ company_name: company, email, phone, password, plan })
                 });
-                
-                const data = await response.json();
-                
+                const data = await res.json();
                 if (data.success) {
                     successDiv.style.display = 'block';
-                    successDiv.innerHTML = `✅ Registration successful!<br>API Key: <code style="background:#000;padding:2px 5px;">${data.api_key}</code><br>Please complete payment to activate.`;
+                    successDiv.innerHTML = `✅ Registration successful!<br>Your API Key: <code style="background:#000;padding:2px 5px;">${data.api_key}</code><br><br>${plan !== 'free' ? '💰 Please complete payment to activate premium features.' : '🎉 Your free account is ready! <a href="/login">Login here</a>'}`;
                     
-                    // Save API key for later
-                    localStorage.setItem('pendingApiKey', data.api_key);
-                    
-                    setTimeout(() => {
-                        window.location.href = '/payment';
-                    }, 3000);
+                    if (plan !== 'free') {
+                        successDiv.innerHTML += `<br><br><strong>Payment Instructions:</strong><br>
+                        Bank: NMB Bank Tanzania<br>
+                        Account: 5161480052318274<br>
+                        Reference: ${data.payment_ref}<br>
+                        Amount: $${plan === 'pro' ? '49' : plan === 'business' ? '99' : '299'}<br><br>
+                        After payment, your API key will be activated automatically.`;
+                    }
                 } else {
                     errorDiv.style.display = 'block';
-                    errorDiv.innerHTML = '❌ ' + (data.error || 'Registration failed');
+                    errorDiv.innerText = '❌ ' + (data.error || 'Registration failed');
                 }
-            } catch (error) {
+            } catch (err) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '❌ Registration failed: ' + error.message;
+                errorDiv.innerText = '❌ Registration failed: ' + err.message;
             }
         };
     </script>
