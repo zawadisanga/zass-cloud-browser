@@ -1,0 +1,16 @@
+{
+  "name": "ZASS Cloud Browser",
+  "short_name": "ZASS",
+  "description": "World's fastest screenshot & PDF API",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#667eea",
+  "background_color": "#0f0c29",
+  "icons": [
+    {
+      "src": "/zas.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
